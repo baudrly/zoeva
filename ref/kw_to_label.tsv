@@ -1,0 +1,8 @@
+keyword	label	weight
+glycolysis	kegg:map00010	1.0
+tca	kegg:map00020	1.0
+tricarboxylic	kegg:map00020	0.8
+translation	go:0006412	1.0
+ribosomal	go:0003735	0.8
+mitochondrion	go:0005739	1.0
+oxidoreductase	ko:K00001	0.5
