@@ -1,13 +1,13 @@
-# Zoeva: sequence-annotation hypothesis henerator 
+# Zoeva: sequence-annotation hypothesis generator 
 
 This repository provides a reproducible pipeline that builds on
-[baudrly/clop](https://github.com/baudrly/clop) to:
-1) ingest sequences with crude annotations (species/biotype/description),
-2) train or load a joint sequence-annotation embedding using CLOP,
-3) perform hypothesis generation (annotation & pathway candidates) via kNN and zero‑shot prompts,
-4) validate candidates with traditional tools (BLAST+/DIAMOND, HMMER/Pfam, KOfamScan/eggNOG‑mapper),
-5) score and report ranked hypotheses ready for human review,
-6) propagate evidence over an annotation graph (sequences-keywords-GO/KEGG/Reactome) using personalized PageRank.
+[clop](https://github.com/baudrly/clop) to:
+1) Ingest sequences with crude annotations (species/biotype/description),
+2) Train or load a joint sequence-annotation embedding using CLOP,
+3) Perform hypothesis generation (annotation & pathway candidates) via kNN and zero‑shot prompts,
+4) Validate candidates with traditional tools (BLAST+/DIAMOND, HMMER/Pfam, KOfamScan/eggNOG‑mapper),
+5) Score and report ranked hypotheses ready for human review,
+6) Propagate evidence over an annotation graph (sequences-keywords-GO/KEGG/Reactome) using personalized PageRank.
 
 The pipeline is orchestrated by a single CLI (`zoeva`) and an optional Snakemake workflow.
 
