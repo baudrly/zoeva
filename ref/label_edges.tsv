@@ -1,7 +1,0 @@
-src	dst	rel	weight
-go:0006412	go:0010467	is_a	0.8
-go:0003735	go:0006412	part_of	0.8
-go:0005739	go:0007005	part_of	0.5
-kegg:map00010	kegg:metabolism	part_of	0.6
-kegg:map00020	kegg:metabolism	part_of	0.6
-ko:K00001	kegg:map00010	related	0.4

@@ -1,6 +1,6 @@
 # Zoeva
 
-Species and Sequence Ontology class recognition from fixed 500 bp windows, with held-out chromosomes, transfer tests and mechanism analyses. `clop2/` is the contrastive DNA–text encoder; `atlas/` builds the corpus, trains, benchmarks, probes and draws. Read `HANDOFF.md` first. Exploratory; not a disease result.
+Species and Sequence Ontology class recognition from fixed 500 bp windows, with held-out chromosomes, transfer tests and mechanism analyses. `clop2/` is the contrastive DNA–text encoder; `atlas/` builds the corpus, trains, benchmarks, probes and draws. 
 
 ## Install
 
