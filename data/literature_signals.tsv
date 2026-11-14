@@ -1,0 +1,27 @@
+name	consensus	species	classes	references	note
+TATA box	TATAWAWR	yeast,arabidopsis,worm,fly,human	promoter	basehoar2004,ohler2002	core promoter element in a minority of promoters
+Initiator (mammal)	YYANWYY	human	promoter	ohler2002	at the transcription start site
+Initiator (fly)	TCAGTY	fly	promoter	ohler2002	at the transcription start site
+DRE	TATCGATA	fly	promoter	ohler2002	DREF binding site in fly core promoters
+GAGA element	GAGAGAGA	fly	promoter	ohler2002	GAGA factor sites upstream of fly promoters
+GC box (Sp1)	GGGGCGGGG	human	promoter	dynan1983	Sp1 binding site in CpG-island promoters
+CCAAT box	GGCCAATCT	yeast,arabidopsis,worm,fly,human	promoter	mantovani1998	NF-Y binding site upstream of eukaryotic promoters
+CpG run	CGCGCG	human	promoter	bird1986	CpG islands mark most human promoters
+Poly(dA:dT) tract	AAAAAAAA	yeast	promoter	iyer1995	nucleosome-disfavouring promoter element
+Telo box	AAACCCTA	arabidopsis	promoter	tremousaygue2003	internal telomeric repeat in plant promoters
+bacterial -10 box	TATAAT	ecoli	promoter	pribnow1975,harley1987	sigma70 promoter element
+bacterial -35 box	TTGACA	ecoli	promoter	harley1987	sigma70 promoter element
+Shine-Dalgarno	AGGAGG	ecoli	promoter	shine1974	ribosome binding site upstream of start codons (inside these windows)
+Kozak	GCCRCCATGG	human	five_prime_UTR,CDS	kozak1987	start-codon context
+5' splice site	MAGGTRAGT	arabidopsis,worm,fly,human	intron,CDS,five_prime_UTR	shapiro1987	exon-intron junction
+3' splice site	YYYYYYNCAGG	arabidopsis,fly,human	intron,CDS,three_prime_UTR	shapiro1987	intron-exon junction
+nematode 3' splice site	TTTTCAGR	worm	intron,CDS,three_prime_UTR	hollins2005	highly conserved in C. elegans
+poly(A) signal	AATAAA	worm,fly,human	three_prime_UTR	proudfoot1976	cleavage and polyadenylation signal
+tRNA A box	TRGCNNAGYNGG	yeast,arabidopsis,worm,fly,human	tRNA	galli1981	internal Pol III promoter
+tRNA B box	GGTTCGANTCC	yeast,arabidopsis,worm,fly,human	tRNA	galli1981	internal Pol III promoter
+ARS consensus	WTTTAYRTTTW	yeast	replication_origin	theis1997	origin recognition complex binding site
+Sm site	AATTTTTGG	fly,human	snRNA	branlant1982	Sm protein binding site of spliceosomal snRNAs
+snoRNA box C	RTGATGA	fly,human	snoRNA	kisslaszlo1996	C/D box snoRNA element
+AP-1 site	TGASTCA	human	enhancer,open_chromatin	angel1991	Jun/Fos binding site, common in enhancers
+CTCF site	CCGCGNGGNGGCAG	human	open_chromatin	kim2007	insulator protein binding site
+yeast branch point	TACTAAC	yeast	intron	shapiro1987	invariant in yeast introns

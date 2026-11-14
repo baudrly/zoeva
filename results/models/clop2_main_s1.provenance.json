@@ -1,0 +1,150 @@
+{
+  "arch": {
+    "c1": 64,
+    "c2": 96,
+    "core_bp": 200,
+    "dilations": [
+      1,
+      2,
+      4
+    ],
+    "dim": 64,
+    "k1": 15,
+    "k2": 7,
+    "pool1": 8,
+    "pool2": 2
+  },
+  "provenance": {
+    "arch": {
+      "c1": 64,
+      "c2": 96,
+      "core_bp": 200,
+      "dilations": [
+        1,
+        2,
+        4
+      ],
+      "dim": 64,
+      "k1": 15,
+      "k2": 7,
+      "pool1": 8,
+      "pool2": 2
+    },
+    "batch": 256,
+    "corpus_sha256": "eb807278a91f57b5c475eee0726dea49760b11253ade464bc5efb0a79f0ebb07",
+    "crop_lengths": [
+      200,
+      350,
+      500
+    ],
+    "dev_rows": 4322,
+    "epochs": 10,
+    "exposure": "Vocabulary, weights and early stopping used only the rows passed to train().",
+    "fit_rows": 39936,
+    "history": [
+      {
+        "dev_text_accuracy": 0.08445164275798242,
+        "epoch": 1,
+        "last_batch_loss": 4.1316022872924805
+      },
+      {
+        "dev_text_accuracy": 0.179469381459201,
+        "epoch": 2,
+        "last_batch_loss": 3.4256091117858887
+      },
+      {
+        "dev_text_accuracy": 0.2806571031929662,
+        "epoch": 3,
+        "last_batch_loss": 3.035025119781494
+      },
+      {
+        "dev_text_accuracy": 0.2771864877371587,
+        "epoch": 4,
+        "last_batch_loss": 3.0058083534240723
+      },
+      {
+        "dev_text_accuracy": 0.2629955267623014,
+        "epoch": 5,
+        "last_batch_loss": 2.930891513824463
+      },
+      {
+        "dev_text_accuracy": 0.3275489742403208,
+        "epoch": 6,
+        "last_batch_loss": 3.1023244857788086
+      },
+      {
+        "dev_text_accuracy": 0.366805491284899,
+        "epoch": 7,
+        "last_batch_loss": 2.83858060836792
+      },
+      {
+        "dev_text_accuracy": 0.3745179700755823,
+        "epoch": 8,
+        "last_batch_loss": 2.7965292930603027
+      },
+      {
+        "dev_text_accuracy": 0.3815363257751041,
+        "epoch": 9,
+        "last_batch_loss": 2.916013479232788
+      },
+      {
+        "dev_text_accuracy": 0.38485269165509794,
+        "epoch": 10,
+        "last_batch_loss": 2.611427068710327
+      }
+    ],
+    "max_lr": 0.001,
+    "name": "clop2_main_s1",
+    "objective": "multi_positive",
+    "parameters": 164993,
+    "seed": 20261115,
+    "selected_dev_text_accuracy": 0.38485269165509794
+  },
+  "training_cells": [
+    "arabidopsis|CDS",
+    "arabidopsis|intergenic",
+    "arabidopsis|intron",
+    "arabidopsis|promoter",
+    "arabidopsis|tRNA",
+    "arabidopsis|transposable_element",
+    "ecoli|CDS",
+    "ecoli|promoter",
+    "fly|CDS",
+    "fly|enhancer",
+    "fly|five_prime_UTR",
+    "fly|intergenic",
+    "fly|intron",
+    "fly|lncRNA",
+    "fly|miRNA",
+    "fly|promoter",
+    "fly|pseudogene",
+    "fly|snoRNA",
+    "fly|tRNA",
+    "fly|three_prime_UTR",
+    "human|CDS",
+    "human|enhancer",
+    "human|five_prime_UTR",
+    "human|intergenic",
+    "human|intron",
+    "human|lncRNA",
+    "human|miRNA",
+    "human|open_chromatin",
+    "human|promoter",
+    "human|pseudogene",
+    "human|snRNA",
+    "human|snoRNA",
+    "human|three_prime_UTR",
+    "worm|CDS",
+    "worm|five_prime_UTR",
+    "worm|intergenic",
+    "worm|intron",
+    "worm|promoter",
+    "worm|three_prime_UTR",
+    "yeast|CDS",
+    "yeast|promoter",
+    "yeast|replication_origin",
+    "yeast|tRNA",
+    "yeast|transposable_element"
+  ],
+  "variant": "main"
+}

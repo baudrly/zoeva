@@ -1,0 +1,760 @@
+<title>Genome Atlas Reader</title>
+<meta name="viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a specimen atlas. One reading bench up top (sequence in, species and class out), then plates of evidence in a single column. */
+:root {
+  --paper: #f1f3f6; --leaf: #ffffff; --ink: #121a2b; --ink-2: #4a5468; --ink-3: #7d869a; --rule: #d8dde6; --wash: #e8ecf2;
+  --accent: #3b3bb3; --accent-ink: #ffffff; --clop: #e0612b; --base: #2a78d6; --ctrl: #8a8f99;
+  --ecoli: #8a8984; --yeast: #d99a00; --arabidopsis: #1f8a3a; --worm: #16a083; --fly: #6250d6; --human: #e0612b;
+  --A: #16843a; --C: #2a78d6; --G: #d99a00; --T: #d6403d;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0f131c; --leaf: #171c28; --ink: #e9edf5; --ink-2: #b2bacb; --ink-3: #7f889c; --rule: #2a3142; --wash: #212839;
+  --accent: #9d9dff; --accent-ink: #10102e; --clop: #f07a45; --base: #5598e7; --ctrl: #8a8f99;
+  --ecoli: #a3a29d; --yeast: #e7ab18; --arabidopsis: #3fb15a; --worm: #2cc3a1; --fly: #9085e9; --human: #f07a45;
+  --A: #3fb15a; --C: #5598e7; --G: #e7ab18; --T: #ef6a66; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #0f131c; --leaf: #171c28; --ink: #e9edf5; --ink-2: #b2bacb; --ink-3: #7f889c; --rule: #2a3142; --wash: #212839;
+  --accent: #9d9dff; --accent-ink: #10102e; --clop: #f07a45; --base: #5598e7; --ctrl: #8a8f99;
+  --ecoli: #a3a29d; --yeast: #e7ab18; --arabidopsis: #3fb15a; --worm: #2cc3a1; --fly: #9085e9; --human: #f07a45;
+  --A: #3fb15a; --C: #5598e7; --G: #e7ab18; --T: #ef6a66; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--body); padding-block: 0 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance }
+h1 { font-size: clamp(32px, 5.4vw, 58px); line-height: .98; font-weight: 800; letter-spacing: -.02em }
+h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 700; letter-spacing: -.01em; line-height: 1.1 }
+h3 { font-size: 16px; font-weight: 700 }
+p { margin: 0; max-width: 68ch }
+.label { font: 600 11px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent) }
+.muted { color: var(--ink-2) } .small { font-size: 13px } .num { font-variant-numeric: tabular-nums }
+i.sp { font-style: italic }
+nav.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-left, 0px)); overflow-x: auto; white-space: nowrap }
+nav.top .inner { max-width: 1120px; margin: 0 auto; display: flex; gap: 2px; align-items: center }
+nav.top b { font: 800 15px/1 var(--display); margin-right: 14px }
+nav.top a { color: var(--ink-2); text-decoration: none; font: 500 13px/1 var(--body); padding: 7px 10px; border-radius: 3px }
+nav.top a:hover { background: var(--wash); color: var(--ink) }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 16; background: var(--paper) }
+section { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 70px }
+header.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 32px; padding-top: 34px; align-items: start }
+.hero-text { display: flex; flex-direction: column; gap: 16px }
+.figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 3px solid var(--ink) }
+.figures div { padding: 10px 12px 0 0; display: flex; flex-direction: column; gap: 3px }
+.figures b { font: 800 30px/1 var(--display); letter-spacing: -.02em }
+.figures span { font-size: 12.5px; color: var(--ink-2); line-height: 1.35 }
+.plate { background: var(--leaf); border: 1px solid var(--rule); border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0 }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px }
+.scroll { overflow-x: auto; min-width: 0 }
+textarea, select, button { font: inherit; color: inherit }
+textarea { width: 100%; min-height: 92px; resize: vertical; background: var(--paper); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 10px; font: 12.5px/1.5 var(--mono); word-break: break-all }
+select { background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 8px; max-width: 100% }
+button { background: var(--leaf); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 12px; cursor: pointer }
+button:hover { border-color: var(--ink-3) }
+button.go { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600 }
+button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.error { color: var(--T); font-size: 13px; font-weight: 500 }
+.card { border-top: 2px solid var(--ink); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.verdict { font: 800 25px/1.08 var(--display); letter-spacing: -.01em }
+.bar-row { display: grid; grid-template-columns: 118px minmax(0, 1fr) 44px; gap: 8px; align-items: center; font-size: 13px }
+.bar-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.bar { height: 9px; background: var(--wash); border-radius: 1px; overflow: hidden } .bar i { display: block; height: 100% }
+.truth { font: 500 12px/1.4 var(--mono); color: var(--ink-2) }
+.nn { font: 11.5px/1.55 var(--mono); color: var(--ink-2); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 10px }
+.nn span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+svg text { font-family: var(--body); fill: var(--ink-2); font-size: 11px } svg .ink { fill: var(--ink) }
+svg .mono { font-family: var(--mono) }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper); padding: 6px 9px; border-radius: 3px;
+  font-size: 12px; max-width: 300px; z-index: 20 }
+canvas#mapCanvas { width: 100%; height: 520px; display: block; background: var(--paper); border-radius: 3px; cursor: crosshair }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0 }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px } .tabs button { font-size: 12.5px; padding: 4px 10px }
+.gallery img { width: 100%; height: auto; display: block; border-radius: 2px; background: #fcfcfb }
+.seqstrip { font: 11px/1.7 var(--mono); word-break: break-all; letter-spacing: .02em }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; font-size: 14px; max-width: 76ch }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; max-width: 76ch }
+progress { width: 100%; height: 6px; accent-color: var(--accent) }
+table.hyp { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 760px }
+table.hyp th, table.hyp td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle }
+table.hyp th { color: var(--ink-2); font-weight: 600; font-size: 11.5px }
+table.hyp tr.click { cursor: pointer } table.hyp tr.click:hover td { background: var(--wash) }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11.5px; font-weight: 600; white-space: nowrap }
+.st-known { background: color-mix(in srgb, var(--base) 18%, transparent); color: var(--base) }
+.st-context { background: color-mix(in srgb, var(--fly) 18%, transparent); color: var(--fly) }
+.st-novel { background: color-mix(in srgb, var(--clop) 18%, transparent); color: var(--clop) }
+.st-comp { background: var(--wash); color: var(--ink-2) }
+.recall { display: flex; flex-wrap: wrap; gap: 6px }
+.recall span { font-size: 12px; padding: 3px 8px; border-radius: 3px; border: 1px solid var(--rule) }
+.recall span.rep { background: color-mix(in srgb, var(--base) 16%, transparent); border-color: var(--base) }
+.recall span.gen { border-style: dashed; border-color: var(--base) }
+@media (max-width: 800px) { header.hero, .grid2, .grid3 { grid-template-columns: minmax(0, 1fr) } canvas#mapCanvas { height: 380px }
+  .figures b { font-size: 24px } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style>
+
+<div class="wrap">
+<nav class="top" aria-label="Sections"><div class="inner">
+  <b>Genome Atlas Reader</b><a href="#bench">Read a sequence</a><a href="#atlas">Atlas</a><a href="#results">Recognition</a>
+  <a href="#transfer">Transfer</a><a href="#reads">What it reads</a><a href="#space">Embedding</a><a href="#hypotheses">Hypotheses</a><a href="#asthma">Asthma</a><a href="#plates">Plates</a><a href="#notes">Notes</a>
+</div></nav>
+
+<header class="hero">
+  <div class="hero-text">
+    <span class="label">CLOP2 · six genomes · held-out chromosomes</span>
+    <h1>Which organism, and which kind of sequence, from 500 bases alone</h1>
+    <p class="muted">CLOP2 is a small DNA–text contrastive encoder trained on 44 species × sequence-class cells, from <i class="sp">E. coli</i> to human. Zoeva reads a window through it, votes among annotated neighbours, and ranks species and Sequence Ontology classes. Everything on this page runs in your browser, on windows from chromosomes the model never saw.</p>
+    <div class="figures" id="figures"></div>
+  </div>
+  <div id="heroAtlas" aria-label="Corpus atlas: species by sequence class"></div>
+</header>
+
+<section id="bench">
+  <span class="label">Reading bench</span>
+  <h2>Read a sequence</h2>
+  <div class="plate">
+    <div class="row">
+      <label for="example" class="small muted">Held-out example</label>
+      <select id="example"></select>
+      <button id="random">Random example</button>
+    </div>
+    <label for="seq" class="small muted">Sequence (FASTA or raw; the central 500 bp are read, at least 100 bp needed)</label>
+    <textarea id="seq" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="go" id="run">Read</button>
+      <button id="occlude">Map which bases matter</button>
+      <button id="testHyp">Test hypotheses on this sequence</button>
+      <span class="small muted" id="timing"></span>
+    </div>
+    <div class="error" id="err" role="alert"></div>
+    <div class="grid3" id="report"></div>
+    <div id="queryHyp"></div>
+    <div id="occlusion"></div>
+  </div>
+</section>
+
+<section id="atlas">
+  <span class="label">Corpus</span>
+  <h2>Forty-four cells across six genomes</h2>
+  <p class="muted">Every element became one 500 bp window centred on its midpoint, so length carries no label. Whole chromosomes (a 1 Mb block for <i class="sp">E. coli</i>) were held out for testing. Click a cell to read one of its held-out windows.</p>
+  <div class="plate scroll" id="atlasGrid"></div>
+</section>
+
+<section id="results">
+  <span class="label">Recognition, held-out chromosomes</span>
+  <h2>Species and class recognition</h2>
+  <div class="plate">
+    <div class="tabs" role="tablist" id="taskTabs"></div>
+    <div class="scroll" id="benchChart"></div>
+    <p class="small muted" id="benchNote"></p>
+  </div>
+  <div class="plate">
+    <h3>Which classes carry species identity</h3>
+    <div class="scroll" id="speciesByClass"></div>
+  </div>
+</section>
+
+<section id="transfer">
+  <span class="label">Beyond the training cells</span>
+  <h2>Compositional naming and unseen species</h2>
+  <div class="grid2">
+    <div class="plate"><h3>Cells withheld from training</h3><div class="scroll" id="compChart"></div><p class="small muted" id="compNote"></p></div>
+    <div class="plate"><h3>Leave one species out</h3><div class="scroll" id="losoChart"></div><p class="small muted" id="losoNote"></p></div>
+  </div>
+</section>
+
+<section id="reads">
+  <span class="label">Mechanism</span>
+  <h2>What the encoder reads</h2>
+  <div class="plate">
+    <h3>Destroying sequence order, step by step</h3>
+    <div class="tabs" id="ladderTabs"></div>
+    <div class="scroll" id="ladderChart"></div>
+    <p class="small muted" id="frameNote"></p>
+  </div>
+  <div class="plate">
+    <h3>Landmarks: occlusion and base composition</h3>
+    <div class="row"><select id="landmark" aria-label="Landmark"></select><div class="legend" id="landmarkLegend"></div></div>
+    <div class="scroll" id="landmarkChart"></div>
+    <div class="scroll" id="landmarkLogo"></div>
+    <p class="small muted">Each 10 bp stretch of the window is replaced by N in turn; the curve is the mean drop in cosine similarity to the cell's text prototype. Logos show the bases at the landmark in the same windows, a check that the annotation coordinates land where the biology says.</p>
+  </div>
+  <div class="plate">
+    <h3>First-layer filters, matched to known signals</h3>
+    <div class="grid3" id="filterGrid"></div>
+  </div>
+</section>
+
+<section id="space">
+  <span class="label">Embedding</span>
+  <h2>How the space is organised</h2>
+  <div class="plate">
+    <div class="row" style="justify-content: space-between"><div class="legend" id="mapLegend"></div><span class="small muted">Click a point to read it</span></div>
+    <canvas id="mapCanvas" aria-label="t-SNE map of held-out windows"></canvas>
+    <p class="small muted" id="mapNote"></p>
+  </div>
+</section>
+
+<section id="hypotheses">
+  <span class="label">Zoeva · automatic hypotheses</span>
+  <h2>Hypotheses generated, registered and tested</h2>
+  <p class="muted" id="hypIntro"></p>
+  <div class="plate">
+    <div class="grid3" id="hypBaseline"></div>
+  </div>
+  <div class="plate">
+    <div class="row" style="justify-content: space-between">
+      <div class="tabs" id="hypTabs"></div>
+      <label class="small muted"><input type="checkbox" id="hypReplicated" checked> replicated only</label>
+    </div>
+    <div class="scroll"><table class="hyp" id="hypTable"></table></div>
+    <p class="small muted">Necessity: drop in Zoeva's class probability when the motif's occurrences are randomised, beyond the drop from randomising as many 6 bp blocks elsewhere in the same windows (validation · test). Enrichment: odds ratio of carrying the seed, held-out windows of the cell against the species' other classes. Sufficient: implanting the seed into other windows raises the class probability more than a letter-shuffled seed, on both splits. Click a row to read a held-out window that carries it.</p>
+  </div>
+  <div class="plate">
+    <h3>Signals the literature predicts</h3>
+    <div class="scroll" id="hypRecall"></div>
+  </div>
+</section>
+
+<section id="asthma">
+  <span class="label">Asthma · exploratory</span>
+  <h2>From the CDHR3 × GSDMB interaction to sequence readouts</h2>
+  <p class="muted" id="astIntro"></p>
+  <div class="plate">
+    <div class="scroll"><table class="hyp" id="astTable"></table></div>
+    <p class="small muted">Percentiles rank each readout among all 300 single-base substitutions within 50 bp of the variant. Leads: JASPAR motifs present on one allele whose change passes the 95th percentile, observed / expected when a random nearby substitution plays the variant. * training chromosome. The buttons load either allele into the reading bench, where both can be tested against the registered hypotheses.</p>
+  </div>
+  <div class="grid2">
+    <div class="plate"><h3>Published mechanisms, read from sequence</h3><div id="astChecks"></div></div>
+    <div class="plate"><h3>Interacting pairs: do the risk alleles move the same way?</h3><div class="scroll" id="astPairs"></div></div>
+  </div>
+</section>
+
+<section id="plates">
+  <span class="label">Plates</span>
+  <h2>Paper figures</h2>
+  <div class="plate gallery">
+    <div class="tabs" id="galleryTabs"></div>
+    <img id="galleryImg" alt="">
+  </div>
+</section>
+
+<section id="notes">
+  <span class="label">Read before citing</span>
+  <h2>Notes</h2>
+  <ul class="plain small" id="notesList"></ul>
+</section>
+</div>
+<div id="tip" hidden></div>
+
+<script id="bundle" type="application/json">/*__BUNDLE__*/</script>
+<script>
+"use strict";
+const B = JSON.parse(document.getElementById("bundle").textContent);
+const $ = id => document.getElementById(id);
+const f32 = s => new Float32Array(Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer);
+const pct = x => (100 * x).toFixed(0) + "%";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const tick = () => new Promise(r => setTimeout(r));
+const SPECIES = Object.keys(B.species), CLASSES = Object.keys(B.classes), CELLS = B.cells;
+const CELL_SP = CELLS.map(c => SPECIES.indexOf(c.split("|")[0])), CELL_CL = CELLS.map(c => CLASSES.indexOf(c.split("|")[1]));
+const spVar = s => `var(--${s})`, spShort = s => B.species[s].short, clName = c => B.classes[c];
+const cellName = c => `${spShort(c.split("|")[0])} · ${clName(c.split("|")[1])}`;
+const WINDOW = 500, MIN_BP = 100, BLOCK = 10, STRIDE = 5;
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+/* ---------- CLOP2 DNA encoder: same arithmetic as the PyTorch model, batch norm folded into the weights ---------- */
+const A = B.model.arch, M = Object.fromEntries(Object.entries(B.model).filter(([k]) => /_(w|b)$/.test(k)).map(([k, v]) => [k, f32(v)]));
+const PROTO = f32(B.model.prototypes), SCALE = B.model.scale, DIM = A.dim;
+function conv(inp, C, P, W, bias, O, Kw, dil) {
+  const out = new Float32Array(O * P), half = Kw >> 1;
+  for (let o = 0; o < O; o++) {
+    const ob = o * P;
+    out.fill(bias[o], ob, ob + P);
+    for (let c = 0; c < C; c++) {
+      const wb = (o * C + c) * Kw, ib = c * P;
+      for (let k = 0; k < Kw; k++) {
+        const w = W[wb + k], off = (k - half) * dil;
+        for (let p = Math.max(0, -off), hi = Math.min(P, P - off); p < hi; p++) out[ob + p] += w * inp[ib + p + off];
+      }
+    }
+  }
+  return out;
+}
+function strand(codes, out) {
+  const n = codes.length, {c1, k1, pool1, c2, k2, pool2, dilations} = A, pad = k1 >> 1;
+  const P1 = Math.floor(n / pool1), P2 = Math.floor(P1 / pool2), h1 = new Float32Array(c1 * P1);
+  for (let o = 0; o < c1; o++) {
+    const base = o * 4 * k1, bias = M.conv1_b[o];
+    for (let p = 0; p < P1; p++) {
+      let best = 0;
+      for (let j = 0; j < pool1; j++) {
+        const pos = p * pool1 + j;
+        let s = bias;
+        for (let k = Math.max(0, pad - pos), hi = Math.min(k1, n + pad - pos); k < hi; k++) {
+          const code = codes[pos + k - pad];
+          if (code < 4) s += M.conv1_w[base + code * k1 + k];
+        }
+        if (s > best) best = s;
+      }
+      h1[o * P1 + p] = best;
+    }
+  }
+  const wide = conv(h1, c1, P1, M.conv2_w, M.conv2_b, c2, k2, 1), h = new Float32Array(c2 * P2);
+  for (let o = 0; o < c2; o++) for (let p = 0; p < P2; p++) {
+    let best = 0;
+    for (let j = 0; j < pool2; j++) { const v = wide[o * P1 + p * pool2 + j]; if (v > best) best = v; }
+    h[o * P2 + p] = best;
+  }
+  dilations.forEach((d, i) => {
+    const t = conv(h, c2, P2, M[`block${i}_w`], M[`block${i}_b`], c2, 3, d);
+    for (let j = 0; j < t.length; j++) if (t[j] > 0) h[j] += t[j];
+  });
+  const pooled = new Float32Array(4 * c2), mid = (P2 - 1) / 2, reach = A.core_bp / 2 / (pool1 * pool2);
+  for (let o = 0; o < c2; o++) {
+    let best = -Infinity, sum = 0, coreBest = -Infinity, coreSum = 0, coreN = 0;
+    for (let p = 0; p < P2; p++) {
+      const v = h[o * P2 + p];
+      sum += v; if (v > best) best = v;
+      if (Math.abs(p - mid) <= reach) { coreSum += v; coreN++; if (v > coreBest) coreBest = v; }
+    }
+    pooled[o] = best; pooled[c2 + o] = coreBest; pooled[2 * c2 + o] = sum / P2; pooled[3 * c2 + o] = coreSum / coreN;
+  }
+  for (let d = 0; d < DIM; d++) {
+    let s = M.fc_b[d];
+    for (let j = 0; j < 4 * c2; j++) s += M.fc_w[d * 4 * c2 + j] * pooled[j];
+    out[d] += s;
+  }
+}
+function embed(codes) {
+  const out = new Float32Array(DIM), rc = new Uint8Array(codes.length);
+  for (let i = 0; i < codes.length; i++) { const c = codes[codes.length - 1 - i]; rc[i] = c < 4 ? 3 - c : 4; }
+  strand(codes, out); strand(rc, out);
+  let n = 0; for (const v of out) n += v * v; n = Math.sqrt(n) || 1;
+  return out.map(v => v / n);
+}
+
+/* ---------- Zoeva: neighbour vote + text prototypes ---------- */
+const IDX = f32(B.index.embeddings), IDX_CELL = B.index.cell, NREF = IDX_CELL.length;
+const textSim = e => CELLS.map((_, c) => { let s = 0; for (let d = 0; d < DIM; d++) s += e[d] * PROTO[c * DIM + d]; return s; });
+function softmax(v) { const m = Math.max(...v), x = v.map(a => Math.exp(a - m)), s = x.reduce((a, b) => a + b, 0); return x.map(a => a / s); }
+function neighbours(e, k) {
+  const sims = new Float32Array(NREF);
+  for (let r = 0; r < NREF; r++) { let s = 0; for (let d = 0; d < DIM; d++) s += e[d] * IDX[r * DIM + d]; sims[r] = s; }
+  return Array.from(sims.keys()).sort((a, b) => sims[b] - sims[a]).slice(0, k).map(r => ({r, s: sims[r]}));
+}
+function score(e, fixed) {
+  const k = Math.min(B.k, 15), nn = neighbours(e, Math.max(k, 5)), votes = new Array(CELLS.length).fill(0);
+  nn.slice(0, k).forEach(({r, s}) => { votes[IDX_CELL[r]] += Math.max(s, 0); });
+  const total = votes.reduce((a, b) => a + b, 0) || 1, text = softmax(textSim(e).map(v => SCALE * v));
+  const cell = votes.map((v, c) => 0.5 * v / total + 0.5 * text[c]);
+  const species = SPECIES.map((_, s) => cell.reduce((a, v, c) => a + (CELL_SP[c] === s ? v : 0), 0));
+  const top = fixed ?? species.indexOf(Math.max(...species));
+  const own = CLASSES.map((_, b) => cell.reduce((a, v, c) => a + (CELL_SP[c] === top && CELL_CL[c] === b ? v : 0), 0));
+  const ownSum = own.reduce((a, b) => a + b, 0) || 1;
+  return {cell, species, top, within: own.map(v => v / ownSum), nn: nn.slice(0, 5)};
+}
+
+/* ---------- sequence handling ---------- */
+const CODE = {A: 0, C: 1, G: 2, T: 3};
+function parse(text) {
+  const lines = text.trim().split(/\r?\n/), body = lines[0]?.startsWith(">") ? lines.slice(1) : lines;
+  const end = body.findIndex(l => l.startsWith(">"));
+  const seq = (end < 0 ? body : body.slice(0, end)).join("").replace(/\s+/g, "").toUpperCase();
+  if (seq.length < MIN_BP) throw new Error(`The sequence has ${seq.length} bp; paste at least ${MIN_BP}.`);
+  if (/[^ACGTN]/.test(seq)) throw new Error("Only A, C, G, T and N are accepted. Remove other characters and read again.");
+  return seq.length > WINDOW ? seq.substr((seq.length - WINDOW) >> 1, WINDOW) : seq;
+}
+const encode = seq => Uint8Array.from(seq, c => CODE[c] ?? 4);
+
+/* ---------- reading bench ---------- */
+let current = null;
+const bars = (items, colour) => items.map(([label, v, c]) => `<div class="bar-row"><span title="${esc(label)}">${label}</span><div class="bar"><i style="width:${(100 * v).toFixed(1)}%;background:${c || colour}"></i></div><span class="num">${v.toFixed(2)}</span></div>`).join("");
+function render(seq, r, truth) {
+  const sp = SPECIES.map((s, i) => [`<i class="sp">${spShort(s)}</i>`, r.species[i], spVar(s)]).sort((a, b) => b[1] - a[1]);
+  const cl = CLASSES.map((c, i) => [clName(c), r.within[i]]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const topSp = SPECIES[r.top], topCl = cl[0][0];
+  const truthLine = truth ? `<div class="truth">Annotated: ${esc(cellName(truth))} · ${truth === CELLS[r.cell.indexOf(Math.max(...r.cell))] ? "match" : "differs"}</div>` : "";
+  $("report").innerHTML = `
+    <div class="card"><span class="label">Species</span><div class="verdict"><i class="sp">${B.species[topSp].name}</i></div>${bars(sp)}</div>
+    <div class="card"><span class="label">Sequence class, within <i class="sp">${spShort(topSp)}</i></span><div class="verdict">${esc(topCl)}</div>${bars(cl, "var(--clop)")}</div>
+    <div class="card"><span class="label">Evidence</span>${truthLine}
+      <div class="small muted">${seq.length} bp · GC ${(100 * (seq.match(/[GC]/g) || []).length / seq.length).toFixed(0)}%</div>
+      <div class="small muted">Nearest annotated training windows (cosine)</div>
+      <div class="nn">${r.nn.map(({r: i, s}) => `<span title="${esc(B.index.id[i])}">${esc(cellName(CELLS[IDX_CELL[i]]))}</span><span class="num">${s.toFixed(2)}</span>`).join("")}</div></div>`;
+}
+async function run(text, truth) {
+  $("err").textContent = ""; $("occlusion").innerHTML = ""; $("queryHyp").innerHTML = "";
+  let seq;
+  try { seq = parse(text); } catch (e) { $("err").textContent = e.message; return; }
+  const t0 = performance.now(), e = embed(encode(seq)), r = score(e);
+  current = {seq, r, truth};
+  render(seq, r, truth);
+  $("timing").textContent = `read in ${(performance.now() - t0).toFixed(0)} ms`;
+}
+async function occlude() {
+  if (!current) return;
+  const {seq, r} = current, codes = encode(seq), cell = r.cell.indexOf(Math.max(...r.cell));
+  const base = textSim(embed(codes))[cell], starts = [];
+  for (let s = 0; s + BLOCK <= codes.length; s += STRIDE) starts.push(s);
+  $("occlusion").innerHTML = `<progress id="occProg" max="${starts.length}" value="0"></progress>`;
+  const drops = [];
+  for (let i = 0; i < starts.length; i++) {
+    const m = codes.slice(); m.fill(4, starts[i], starts[i] + BLOCK);
+    drops.push(base - textSim(embed(m))[cell]);
+    if (i % 6 === 5) { $("occProg").value = i + 1; await tick(); }
+  }
+  const W = 1000, H = 120, n = codes.length, X = p => 40 + p / n * (W - 60), mx = Math.max(...drops.map(Math.abs), 1e-6), Y = v => 60 - v / mx * 48;
+  const path = starts.map((s, i) => `${i ? "L" : "M"}${X(s + BLOCK / 2).toFixed(1)},${Y(drops[i]).toFixed(1)}`).join("");
+  const perBase = new Float32Array(n);
+  starts.forEach((s, i) => { for (let j = s; j < s + BLOCK; j++) perBase[j] = Math.max(perBase[j], drops[i]); });
+  const strip = Array.from(seq, (c, j) => `<span style="color:var(--${c === "N" ? "ink-3" : c});opacity:${(0.25 + 0.75 * Math.max(perBase[j], 0) / mx).toFixed(2)};font-weight:${perBase[j] > 0.5 * mx ? 600 : 400}">${c}</span>`).join("");
+  $("occlusion").innerHTML = `<div class="small muted">Similarity to “${esc(cellName(CELLS[cell]))}” lost when each 10 bp stretch is masked (up = needed)</div>
+    <div class="scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:560px" role="img" aria-label="Occlusion profile">
+      <line x1="40" x2="${W - 20}" y1="60" y2="60" stroke="var(--rule)"/><path d="${path}" fill="none" stroke="var(--clop)" stroke-width="1.6"/>
+      ${[0, 100, 200, 300, 400, 500].filter(v => v <= n).map(v => `<text x="${X(v)}" y="${H - 4}" text-anchor="middle">${v}</text>`).join("")}</svg></div>
+    <div class="seqstrip">${strip}</div>`;
+}
+
+/* ---------- examples ---------- */
+const EX = B.examples;
+$("example").innerHTML = EX.map((x, i) => `<option value="${i}">${esc(cellName(x.cell))} · ${esc(x.id.split(":").slice(2).join(":"))}</option>`).join("");
+const load = i => { $("example").value = i; $("seq").value = EX[i].sequence; run(EX[i].sequence, EX[i].cell); };
+const loadCell = cell => { const i = EX.findIndex(x => x.cell === cell); if (i >= 0) { load(i); $("bench").scrollIntoView({behavior: "smooth"}); } };
+$("example").onchange = () => load(+$("example").value);
+$("random").onclick = () => load(Math.floor(Math.random() * EX.length));
+$("run").onclick = () => run($("seq").value, null);
+$("occlude").onclick = occlude;
+
+/* ---------- tooltip ---------- */
+const tip = $("tip");
+document.addEventListener("pointermove", ev => {
+  const t = ev.target.closest?.("[data-tip]");
+  if (!t) { tip.hidden = true; return; }
+  tip.innerHTML = t.dataset.tip; tip.hidden = false;
+  tip.style.left = Math.min(ev.clientX + 12, innerWidth - 310) + "px"; tip.style.top = ev.clientY + 14 + "px";
+});
+
+/* ---------- hero numbers and atlas ---------- */
+const BM = B.benchmark, LEAD = "clop2_main_s0_zoeva";
+const leadF1 = t => t === "biotype_given_species" ? BM.arms[LEAD][t].macro_f1_mean_over_species : BM.arms[LEAD][t].macro_f1;
+const nWindows = Object.values(B.preparation).reduce((a, v) => a + v.train + v.validation + v.test, 0);
+$("figures").innerHTML = [
+  [leadF1("species").toFixed(2), `species macro F1, six genomes (chance ${BM.chance.species.toFixed(2)})`],
+  [leadF1("biotype_given_species").toFixed(2), "class macro F1 within species, mean over genomes"],
+  [nWindows.toLocaleString("en"), `windows in ${CELLS.length} cells; ${BM.n.toLocaleString("en")} held out`],
+].map(([b, s]) => `<div><b class="num">${b}</b><span>${s}</span></div>`).join("");
+function atlas(target, compact) {
+  const cls = CLASSES.filter(c => SPECIES.some(s => B.preparation[`${s}|${c}`])), cw = compact ? 31 : 52, left = compact ? 92 : 112, top = compact ? 96 : 110;
+  const W = left + cls.length * cw + (compact ? 70 : 80), H = top + SPECIES.length * (compact ? 34 : 42) + 6, rh = compact ? 34 : 42;
+  const maxN = Math.max(...Object.values(B.preparation).map(v => v.test));
+  let g = cls.map((c, j) => `<text x="${left + j * cw + cw / 2}" y="${top - 10}" transform="rotate(-50 ${left + j * cw + cw / 2} ${top - 10})" class="ink">${esc(clName(c))}</text>`).join("");
+  g += SPECIES.map((s, i) => `<text x="${left - 8}" y="${top + i * rh + rh / 2 + 4}" text-anchor="end" class="ink" font-style="italic">${spShort(s)}</text>
+    <line x1="${left}" x2="${left + cls.length * cw}" y1="${top + i * rh + rh / 2}" y2="${top + i * rh + rh / 2}" stroke="var(--rule)"/>`).join("");
+  SPECIES.forEach((s, i) => cls.forEach((c, j) => {
+    const v = B.preparation[`${s}|${c}`]; if (!v) return;
+    const r = 3 + Math.sqrt(v.test / maxN) * (compact ? 11 : 15), held = B.heldOutCells.includes(`${s}|${c}`);
+    g += `<circle cx="${left + j * cw + cw / 2}" cy="${top + i * rh + rh / 2}" r="${r.toFixed(1)}" fill="${spVar(s)}" ${held ? 'stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="2 2"' : ""}
+      style="cursor:pointer" data-cell="${s}|${c}" data-tip="${esc(cellName(`${s}|${c}`))}<br>${v.train} train · ${v.validation} validation · ${v.test} test${held ? "<br>withheld from the compositional model" : ""}"/>`;
+  }));
+  target.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;min-width:${compact ? 0 : 640}px" role="img" aria-label="Species by sequence class atlas">${g}</svg>`;
+  target.querySelectorAll("[data-cell]").forEach(el => el.addEventListener("click", () => loadCell(el.dataset.cell)));
+}
+atlas($("heroAtlas"), true); atlas($("atlasGrid"), false);
+
+/* ---------- benchmark ---------- */
+const TASKS = [["species", "Species"], ["biotype_given_species", "Class, species given"], ["biotype", "Class, species unknown"], ["cell", "Species × class cell"]];
+let task = "species";
+function drawBench() {
+  const arms = Object.keys(BM.arms), W = 760, rowH = 26, left = 210, H = arms.length * rowH + 34, X = v => left + v * (W - left - 60);
+  let g = [0, .2, .4, .6, .8, 1].map(v => `<line x1="${X(v)}" x2="${X(v)}" y1="4" y2="${H - 24}" stroke="var(--rule)"/><text x="${X(v)}" y="${H - 8}" text-anchor="middle">${v.toFixed(1)}</text>`).join("");
+  arms.forEach((a, i) => {
+    const e = BM.arms[a][task], v = task === "biotype_given_species" ? e.macro_f1_mean_over_species : e.macro_f1, y = 8 + i * rowH;
+    const col = a.includes("shuffled") || a.startsWith("majority") ? "var(--ctrl)" : a.startsWith("clop2") ? "var(--clop)" : "var(--base)";
+    g += `<text x="${left - 8}" y="${y + 13}" text-anchor="end" class="ink">${esc(BM.names[a] || a)}</text><rect x="${left}" y="${y}" width="${Math.max(X(v) - left, 1)}" height="${rowH - 9}" fill="${col}" rx="1"/>`;
+    if (e.macro_f1_ci95) g += `<line x1="${X(e.macro_f1_ci95[0])}" x2="${X(e.macro_f1_ci95[1])}" y1="${y + 8.5}" y2="${y + 8.5}" stroke="var(--ink)"/>`;
+    g += `<text x="${X(Math.max(v, e.macro_f1_ci95?.[1] ?? v)) + 6}" y="${y + 13}" class="num">${v.toFixed(3)}</text>`;
+  });
+  const ch = BM.chance[task === "biotype_given_species" ? "biotype" : task];
+  if (task !== "biotype_given_species") g += `<line x1="${X(ch)}" x2="${X(ch)}" y1="4" y2="${H - 24}" stroke="var(--ink-3)" stroke-dasharray="3 3"/>`;
+  $("benchChart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:600px" role="img" aria-label="Macro F1 by arm">${g}</svg>`;
+  $("benchNote").textContent = `Macro F1 on ${BM.n.toLocaleString("en")} held-out windows; black lines are 95% window-bootstrap intervals, dashed line is chance. Orange: CLOP2 and Zoeva; blue: sequence-statistics baselines fitted on the same training windows; grey: controls.`;
+  $("taskTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.task === task));
+}
+$("taskTabs").innerHTML = TASKS.map(([k, l]) => `<button data-task="${k}" role="tab">${l}</button>`).join("");
+$("taskTabs").querySelectorAll("button").forEach(b => b.onclick = () => { task = b.dataset.task; drawBench(); });
+drawBench();
+(() => {
+  const t = BM.species_recall_by_biotype, cls = CLASSES.filter(c => t[c]), cw = 84, left = 150, rh = 22, W = left + SPECIES.length * cw, H = 30 + cls.length * rh;
+  const order = cls.map(c => [c, SPECIES.map(s => t[c][s]).filter(v => v != null)]).sort((a, b) => b[1].reduce((x, y) => x + y, 0) / b[1].length - a[1].reduce((x, y) => x + y, 0) / a[1].length);
+  let g = SPECIES.map((s, j) => `<text x="${left + j * cw + cw / 2}" y="14" text-anchor="middle" font-style="italic" class="ink">${spShort(s)}</text>`).join("");
+  order.forEach(([c], i) => {
+    g += `<text x="${left - 8}" y="${30 + i * rh + 15}" text-anchor="end" class="ink">${esc(clName(c))}</text>`;
+    SPECIES.forEach((s, j) => { const v = t[c][s]; if (v == null) return;
+      g += `<rect x="${left + j * cw + 2}" y="${24 + i * rh}" width="${cw - 4}" height="${rh - 3}" rx="2" fill="var(--${s})" fill-opacity="${(0.12 + 0.88 * v).toFixed(2)}"/>
+        <text x="${left + j * cw + cw / 2}" y="${24 + i * rh + 14}" text-anchor="middle" class="num ink">${pct(v)}</text>`; });
+  });
+  $("speciesByClass").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:560px;max-width:${W}px" role="img" aria-label="Species recall by class">${g}</svg>`;
+})();
+
+/* ---------- transfer ---------- */
+(() => {
+  const C = B.compositional, arms = [["zero_shot_text", "CLOP2 text, cell never seen", "var(--clop)"], ["zero_shot_factorised_knn", "CLOP2 retrieval, species × class", "var(--worm)"],
+    ["zero_shot_factorised_kmer5_core_window_logistic", "5-mer logistic, species × class", "var(--base)"], ["trained_on_cell_text", "Main model (cell seen)", "var(--ctrl)"]];
+  const cells = C.held_out_cells, W = 520, left = 160, rh = 44, H = cells.length * rh + 30, X = v => left + v * (W - left - 40);
+  let g = [0, .5, 1].map(v => `<line x1="${X(v)}" x2="${X(v)}" y1="0" y2="${H - 22}" stroke="var(--rule)"/><text x="${X(v)}" y="${H - 6}" text-anchor="middle">${v}</text>`).join("");
+  cells.forEach((c, i) => {
+    g += `<text x="${left - 8}" y="${i * rh + 18}" text-anchor="end" class="ink">${esc(cellName(c))}</text>`;
+    arms.forEach(([a, l, col], k) => { const v = C.arms[a][c].cell_top1;
+      g += `<rect x="${left}" y="${i * rh + 4 + k * 9}" width="${Math.max(X(v) - left, 1)}" height="8" fill="${col}" data-tip="${esc(l)}: ${pct(v)} top-1, ${pct(C.arms[a][c].cell_top3)} top-3"/>`; });
+  });
+  g += `<line x1="${X(C.chance_cell_top1)}" x2="${X(C.chance_cell_top1)}" y1="0" y2="${H - 22}" stroke="var(--ink-3)" stroke-dasharray="3 3"/>`;
+  $("compChart").innerHTML = `<div class="legend">${arms.map(([, l, c]) => `<span><span class="dot" style="background:${c}"></span>${l}</span>`).join("")}</div>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:420px" role="img" aria-label="Compositional transfer">${g}</svg>`;
+  const o = C.arms.zero_shot_text.overall, f = C.arms.zero_shot_factorised_knn.overall;
+  $("compNote").textContent = `Top-1 among ${C.n_cells} cells for test windows of eight cells the compositional model never saw (dashed: chance). Overall: text ${pct(o.cell_top1)} top-1 and ${pct(o.cell_top3)} top-3; species correct ${pct(o.species)}, class within species ${pct(o.biotype_given_species)}. Factorised retrieval: ${pct(f.cell_top1)} top-1.`;
+  const L = B.loso, larms = [["unseen_species_zoeva", "Zoeva, species unseen", "var(--clop)"], ["unseen_species_kmer5_core_window_logistic", "5-mer logistic, species unseen", "var(--base)"], ["species_in_training_knn", "Species seen (reference)", "var(--ctrl)"]];
+  const W2 = 520, left2 = 120, rh2 = 40, H2 = SPECIES.length * rh2 + 30, X2 = v => left2 + v * (W2 - left2 - 40);
+  let h = [0, .5, 1].map(v => `<line x1="${X2(v)}" x2="${X2(v)}" y1="0" y2="${H2 - 22}" stroke="var(--rule)"/><text x="${X2(v)}" y="${H2 - 6}" text-anchor="middle">${v}</text>`).join("");
+  SPECIES.forEach((s, i) => {
+    h += `<text x="${left2 - 8}" y="${i * rh2 + 14}" text-anchor="end" class="ink" font-style="italic">${spShort(s)}</text><text x="${left2 - 8}" y="${i * rh2 + 27}" text-anchor="end">${L[s].classes.length} classes</text>`;
+    larms.forEach(([a, l, col], k) => { const v = L[s].arms[a].macro_f1;
+      h += `<rect x="${left2}" y="${i * rh2 + 3 + k * 9}" width="${Math.max(X2(v) - left2, 1)}" height="8" fill="${col}" data-tip="${esc(l)}: macro F1 ${v.toFixed(2)}"/>`; });
+    h += `<line x1="${X2(L[s].chance)}" x2="${X2(L[s].chance)}" y1="${i * rh2}" y2="${i * rh2 + 30}" stroke="var(--ink)" stroke-dasharray="2 2"/>`;
+  });
+  $("losoChart").innerHTML = `<div class="legend">${larms.map(([, l, c]) => `<span><span class="dot" style="background:${c}"></span>${l}</span>`).join("")}</div>
+    <svg viewBox="0 0 ${W2} ${H2}" width="100%" style="min-width:420px" role="img" aria-label="Leave one species out">${h}</svg>`;
+  $("losoNote").textContent = "Class macro F1 for a genome left out of training, among the classes it shares with the training genomes (dashed: chance). Grey: retrieval among that genome's own training windows with the main model.";
+})();
+
+/* ---------- shuffle ladder ---------- */
+const LD = B.ladder, LV = Object.keys(LD.versions);
+let ladderMode = "species";
+function drawLadder() {
+  const W = 760, H = 250, left = 46, X = i => left + i * (W - left - 150) / (LV.length - 1), Y = v => 16 + (1 - v) * (H - 56);
+  const key = ladderMode === "species" ? "species_accuracy_by_species" : "class_accuracy_by_class";
+  const groups = Object.keys(LD.versions[LV[0]][key]);
+  let g = [0, .25, .5, .75, 1].map(v => `<line x1="${left}" x2="${W - 150}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="${left - 6}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`).join("");
+  g += LV.map((v, i) => `<text x="${X(i)}" y="${H - 22}" text-anchor="middle">${esc(v.replace(" permuted", "").replace("-preserving", "").replace("nucleotide", "nucl."))}</text>`).join("");
+  const ends = [];
+  groups.forEach(k => {
+    const col = ladderMode === "species" ? spVar(k) : ["CDS", "tRNA", "promoter", "intron", "transposable_element"].includes(k) ? "var(--clop)" : "var(--ink-3)";
+    const pts = LV.map((v, i) => [X(i), Y(LD.versions[v][key][k])]);
+    g += `<polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="${col}" stroke-width="${col === "var(--ink-3)" ? 1 : 1.8}" stroke-opacity="${col === "var(--ink-3)" ? .55 : 1}" data-tip="${esc(ladderMode === "species" ? B.species[k].name : clName(k))}"/>`;
+    ends.push([pts.at(-1)[1], ladderMode === "species" ? spShort(k) : clName(k), col]);
+  });
+  const all = ladderMode === "species" ? "species_accuracy" : "class_given_species_accuracy";
+  g += `<polyline points="${LV.map((v, i) => `${X(i)},${Y(LD.versions[v][all])}`).join(" ")}" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+  ends.sort((a, b) => a[0] - b[0]).forEach(([y, l, c], i, arr) => { const yy = Math.max(y, i ? arr[i - 1].yy + 11 : 0); arr[i].yy = yy;
+    g += `<text x="${W - 144}" y="${yy + 4}" style="fill:${c}" font-size="10">${esc(l)}</text>`; });
+  const ch = ladderMode === "species" ? LD.chance.species : LD.chance.class_given_species;
+  g += `<line x1="${left}" x2="${W - 150}" y1="${Y(ch)}" y2="${Y(ch)}" stroke="var(--ink-3)" stroke-dasharray="3 3"/>`;
+  $("ladderChart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:600px" role="img" aria-label="Shuffle ladder">${g}</svg>`;
+  $("ladderTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === ladderMode));
+}
+$("ladderTabs").innerHTML = `<button data-mode="species">Species accuracy, by genome</button><button data-mode="class">Class accuracy (species given), by class</button>`;
+$("ladderTabs").querySelectorAll("button").forEach(b => b.onclick = () => { ladderMode = b.dataset.mode; drawLadder(); });
+drawLadder();
+$("frameNote").innerHTML = "Black: all windows; dashed: chance. Inside open reading frames, share of windows still called coding: " + Object.entries(B.frame).map(([s, f]) =>
+  `<i class="sp">${spShort(s)}</i> (n=${f.n_windows}) ` + Object.entries(f.versions).map(([v, x]) => `${esc(v)} ${pct(x.coding_call_rate)}`).join(", ")).join("; ") + ".";
+
+/* ---------- landmarks ---------- */
+const LM = B.landmarks;
+$("landmark").innerHTML = Object.keys(LM).map(k => `<option>${esc(k)}</option>`).join("");
+function logoSVG(freq, x0, w, h, colW) {
+  let g = "";
+  freq.forEach((row, i) => {
+    const info = 2 + row.reduce((a, p) => a + (p > 0 ? p * Math.log2(p) : 0), 0);
+    let y = h;
+    row.map((p, b) => [p * info, b]).sort((a, c) => a[0] - c[0]).forEach(([v, b]) => {
+      const hh = v / 2 * h; if (hh < 0.6) return; y -= hh;
+      g += `<text x="${x0 + i * colW + colW / 2}" y="${y + hh}" text-anchor="middle" class="mono" font-weight="700" font-size="${colW * 1.32}" style="fill:var(--${"ACGT"[b]})" transform="translate(${x0 + i * colW + colW / 2} ${y + hh}) scale(1 ${(hh / (colW * 0.98)).toFixed(3)}) translate(${-(x0 + i * colW + colW / 2)} ${-(y + hh)})">${"ACGT"[b]}</text>`;
+    });
+  });
+  return g;
+}
+function drawLandmark() {
+  const hosts = LM[$("landmark").value], W = 900, H = 230, left = 56, all = Object.values(hosts);
+  const xs = all.flatMap(e => e.position), lo = Math.min(...xs), hi = Math.max(...xs), X = p => left + (p - lo) / (hi - lo) * (W - left - 16);
+  const ys = all.flatMap(e => e.mean_drop.map((v, i) => [v - e.sem_drop[i], v + e.sem_drop[i]]).flat()), ymin = Math.min(0, ...ys), ymax = Math.max(...ys), Y = v => 14 + (ymax - v) / (ymax - ymin || 1) * (H - 50);
+  let g = `<line x1="${left}" x2="${W - 16}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--rule)"/><line x1="${X(0)}" x2="${X(0)}" y1="8" y2="${H - 34}" stroke="var(--ink)"/>`;
+  for (let p = Math.ceil(lo / 100) * 100; p <= hi; p += 100) g += `<text x="${X(p)}" y="${H - 16}" text-anchor="middle">${p}</text>`;
+  g += `<text x="${left - 8}" y="${Y(ymax) + 4}" text-anchor="end">${ymax.toFixed(3)}</text><text x="${left - 8}" y="${Y(0) + 4}" text-anchor="end">0</text>`;
+  Object.entries(hosts).forEach(([s, e]) => {
+    const up = e.position.map((p, i) => `${X(p)},${Y(e.mean_drop[i] + e.sem_drop[i])}`), dn = e.position.map((p, i) => `${X(p)},${Y(e.mean_drop[i] - e.sem_drop[i])}`).reverse();
+    g += `<polygon points="${up.concat(dn).join(" ")}" fill="var(--${s})" fill-opacity=".18"/><polyline points="${e.position.map((p, i) => `${X(p)},${Y(e.mean_drop[i])}`).join(" ")}" fill="none" stroke="var(--${s})" stroke-width="1.8"/>`;
+  });
+  $("landmarkChart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:600px" role="img" aria-label="Occlusion profile around landmark">${g}<text x="${W - 16}" y="${H - 2}" text-anchor="end">bp from landmark, transcript orientation</text></svg>`;
+  $("landmarkLegend").innerHTML = Object.entries(hosts).map(([s, e]) => `<span><span class="dot" style="background:var(--${s})"></span><i class="sp">${spShort(s)}</i> n=${e.n_windows}</span>`).join("");
+  const reach = 20, colW = 13, lw = (2 * reach + 1) * colW, rowsH = 64;
+  let l = "";
+  Object.entries(hosts).forEach(([s, e], k) => {
+    const mid = e.base_frequency.length >> 1, x0 = 110 + 0, y0 = k * (rowsH + 8);
+    l += `<text x="100" y="${y0 + rowsH / 2 + 4}" text-anchor="end" font-style="italic" class="ink">${spShort(s)}</text><g transform="translate(0 ${y0})">${logoSVG(e.base_frequency.slice(mid - reach, mid + reach + 1), x0, lw, rowsH, colW)}</g>`;
+  });
+  const n = Object.keys(hosts).length, LH = n * (rowsH + 8) + 22;
+  for (let p = -reach; p <= reach; p += 10) l += `<text x="${110 + (p + reach) * colW + colW / 2}" y="${LH - 4}" text-anchor="middle">${p}</text>`;
+  $("landmarkLogo").innerHTML = `<svg viewBox="0 0 ${110 + lw + 10} ${LH}" width="100%" style="min-width:560px;max-width:${110 + lw + 10}px" role="img" aria-label="Sequence logos at landmark">${l}</svg>`;
+}
+if (LM["tRNA 5' end"]) $("landmark").value = "tRNA 5' end";
+$("landmark").onchange = drawLandmark; drawLandmark();
+
+/* ---------- filters ---------- */
+$("filterGrid").innerHTML = B.filters.slice(0, 12).map(f => {
+  const colW = 14, w = f.pfm.length * colW;
+  return `<div class="card"><div class="row" style="justify-content:space-between"><b class="small">Filter ${f.filter}</b><span class="small ${f.match ? "" : "muted"}">${esc(f.match || "no close match")} ${f.match ? `· ${f.match_cosine.toFixed(2)}` : ""}</span></div>
+    <svg viewBox="0 0 ${w} 56" width="100%" role="img" aria-label="Filter logo">${logoSVG(f.pfm, 0, w, 56, colW)}</svg>
+    <div class="small muted">Strongest in ${f.top_cells.slice(0, 2).map(c => esc(cellName(c.cell))).join("; ")}</div></div>`;
+}).join("");
+
+/* ---------- embedding map ---------- */
+const MP = B.map, canvas = $("mapCanvas"), ctx = canvas.getContext("2d");
+const MSP = MP.cell.map(c => c.split("|")[0]);
+let mapBox = null;
+function drawMap() {
+  const r = canvas.getBoundingClientRect(), dpr = devicePixelRatio || 1;
+  canvas.width = r.width * dpr; canvas.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const xs = MP.x, ys = MP.y, x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), pad = 14;
+  mapBox = {X: x => pad + (x - x0) / (x1 - x0) * (r.width - 2 * pad), Y: y => pad + (y1 - y) / (y1 - y0) * (r.height - 2 * pad)};
+  ctx.clearRect(0, 0, r.width, r.height);
+  const colours = Object.fromEntries(SPECIES.map(s => [s, css(`--${s}`)]));
+  ctx.globalAlpha = .78;
+  for (let i = 0; i < xs.length; i++) { ctx.fillStyle = colours[MSP[i]]; ctx.beginPath(); ctx.arc(mapBox.X(xs[i]), mapBox.Y(ys[i]), 2.4, 0, 6.283); ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+$("mapLegend").innerHTML = SPECIES.map(s => `<span><span class="dot" style="background:var(--${s})"></span><i class="sp">${spShort(s)}</i></span>`).join("");
+function nearestPoint(ev) {
+  const r = canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+  let best = -1, bd = 64;
+  for (let i = 0; i < MP.x.length; i++) { const d = (mapBox.X(MP.x[i]) - mx) ** 2 + (mapBox.Y(MP.y[i]) - my) ** 2; if (d < bd) { bd = d; best = i; } }
+  return best;
+}
+canvas.addEventListener("pointermove", ev => { const i = nearestPoint(ev); if (i < 0) { tip.hidden = true; return; }
+  tip.innerHTML = esc(cellName(MP.cell[i])) + "<br><span style='opacity:.7'>click to read</span>"; tip.hidden = false;
+  tip.style.left = Math.min(ev.clientX + 12, innerWidth - 310) + "px"; tip.style.top = ev.clientY + 14 + "px"; });
+canvas.addEventListener("pointerleave", () => { tip.hidden = true; });
+canvas.addEventListener("click", ev => { const i = nearestPoint(ev); if (i < 0) return;
+  $("example").selectedIndex = -1; $("seq").value = MP.sequence[i]; run(MP.sequence[i], MP.cell[i]); $("bench").scrollIntoView({behavior: "smooth"}); });
+new ResizeObserver(drawMap).observe(canvas);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawMap);
+new MutationObserver(drawMap).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]});
+const G = B.geometry, SO = B.subOntology;
+$("mapNote").innerHTML = `t-SNE of held-out windows, 90 per cell. Variance of the embedding explained by species ${pct(G.variance_explained.species)}, by class ${pct(G.variance_explained.class)}, by cell ${pct(G.variance_explained.cell)}. Ten-neighbour purity: species ${pct(G.ten_neighbour_purity.clop2.species)} (4-mer space ${pct(G.ten_neighbour_purity.kmer4.species)}), class ${pct(G.ten_neighbour_purity.clop2.class)} (4-mer ${pct(G.ten_neighbour_purity.kmer4.class)}).` +
+  (SO.superfamilies?.length ? ` <i class="sp">Arabidopsis</i> transposon superfamilies, never named in training (${SO.superfamilies.map(esc).join(", ")}): retrieval accuracy ${pct(SO.clop2.accuracy)} in CLOP2 space, ${pct(SO.kmer4.accuracy)} with 4-mers, majority ${pct(SO.majority_accuracy)}.` : "");
+
+/* ---------- hypotheses ---------- */
+const HY = B.hypotheses, HS = HY.summary;
+const STATUS_CLASS = {"recovers known signal": "st-known", "known signal, new context": "st-context", "novel lead": "st-novel", composition: "st-comp"};
+const pill = st => `<span class="pill ${STATUS_CLASS[st]}">${esc(st)}</span>`;
+const pc0 = x => x == null ? "–" : (100 * x).toFixed(0) + "%";
+$("hypIntro").textContent = `${HS.n_hypotheses} hypotheses (${HS.n_motif} motif, ${HS.n_composition} composition) were generated from training chromosomes only, written to a registered file (sha256 ${HS.registered_sha256.slice(0, 12)}…), then tested on validation and on test chromosomes with Benjamini–Hochberg control at FDR ${HS.fdr}. Each motif is compared with ${B.literature.length} curated literature signals; the baseline below asks whether the pipeline finds what the literature says should be there, and how often that would happen by chance.`;
+$("hypBaseline").innerHTML = [
+  [`${HS.expected_replicated} / ${HS.expected_pairs}`, "signal–cell pairs predicted by the literature recovered and replicated", `${HS.expected_generated} generated`],
+  [pc0(HS.replicated_expected_signal), "of replicated motifs match a signal expected in their cell", `random 6-mers: ${pc0(HS.chance_match.expected_signal)}`],
+  [`${HS.verdicts.replicated || 0}`, "hypotheses replicated on both held-out splits", `${HS.verdicts["one split only"] || 0} on one; ${HS.replicated_sufficient} also sufficient`],
+].map(([b, s, t]) => `<div class="card"><b class="verdict num">${b}</b><span class="small">${s}</span><span class="small muted">${t}</span></div>`).join("");
+let hypFilter = "all";
+$("hypTabs").innerHTML = ["all", "recovers known signal", "known signal, new context", "novel lead", "composition"].map(k => `<button data-k="${k}">${k}</button>`).join("");
+function logoMini(pfm) { const colW = 9, w = pfm.length * colW; return `<svg viewBox="0 0 ${w} 30" width="${w}" height="30" role="img" aria-label="motif logo">${logoSVG(pfm, 0, w, 30, colW)}</svg>`; }
+function drawHyp() {
+  const onlyRep = $("hypReplicated").checked;
+  const rows = HY.items.filter(h => (hypFilter === "all" || h.status === hypFilter) && (!onlyRep || h.verdict === "replicated"));
+  const fmt = (t, k, d = 2) => t && t[k] != null ? (k.includes("relative") ? (100 * t[k]).toFixed(0) + "%" : t[k].toFixed(d)) : "–";
+  $("hypTable").innerHTML = `<tr><th>Cell</th><th>Hypothesis</th><th>Logo</th><th>Literature</th><th>Necessity (val · test)</th><th>Enrichment OR (val · test)</th><th>Verdict</th></tr>` +
+    rows.map((h, i) => {
+      const v = h.tests.validation, t = h.tests.test;
+      const lit = h.family === "motif" ? (h.literature.name ? `${esc(h.literature.name)} <span class="muted">${h.literature.similarity.toFixed(2)}</span><br><span class="muted small">${esc(h.literature.references.join(", "))}</span>` : `<span class="muted">closest ${esc(h.literature.closest)} ${h.literature.similarity.toFixed(2)}</span>`) + (h.jaspar && h.jaspar.matched ? `<br><span class="muted small">JASPAR ${esc(h.jaspar.name)} ${h.jaspar.similarity.toFixed(2)}</span>` : "") : "";
+      const what = h.family === "motif" ? `<b class="mono">${h.seed}</b>${h.sufficient ? ' <span class="small muted">· sufficient</span>' : ""}` : `composition <span class="small muted">· retention ${fmt(t, "retention_dinucleotide")}</span>`;
+      const nec = h.family === "motif" ? `${fmt(v, "necessity_relative")} · ${fmt(t, "necessity_relative")}` : `${fmt(v, "composition_effect", 3)} · ${fmt(t, "composition_effect", 3)}`;
+      const enr = h.family === "motif" ? `${fmt(v, "odds_ratio")} · ${fmt(t, "odds_ratio")}` : "";
+      return `<tr class="${h.example ? "click" : ""}" data-i="${HY.items.indexOf(h)}"><td>${esc(cellName(h.cell))}</td><td>${what}<div>${pill(h.status)}</div></td><td>${h.pfm ? logoMini(h.pfm) : ""}</td><td>${lit}</td><td class="num">${nec}</td><td class="num">${enr}</td><td>${esc(h.verdict)}</td></tr>`;
+    }).join("");
+  $("hypTable").querySelectorAll("tr.click").forEach(tr => tr.onclick = () => { const h = HY.items[+tr.dataset.i];
+    $("example").selectedIndex = -1; $("seq").value = h.example; run(h.example, h.cell); $("bench").scrollIntoView({behavior: "smooth"}); });
+  $("hypTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === hypFilter));
+}
+$("hypTabs").querySelectorAll("button").forEach(b => b.onclick = () => { hypFilter = b.dataset.k; drawHyp(); });
+$("hypReplicated").onchange = drawHyp; drawHyp();
+$("hypRecall").innerHTML = `<div class="legend" style="margin-bottom:8px"><span><span class="dot" style="background:var(--base)"></span>generated and replicated</span><span>dashed: generated, not replicated</span><span>plain: not generated</span></div><div class="recall">` +
+  HY.recall.map(r => `<span class="${r.replicated ? "rep" : r.generated ? "gen" : ""}" data-tip="${esc(r.references.join(", "))}">${esc(r.signal)} · ${esc(cellName(r.cell))}</span>`).join("") + "</div>";
+
+/* hypotheses on one sequence: randomise the motif's occurrences, compare with random blocks */
+const RC = s => Array.from(s).reverse().map(c => ({A: "T", C: "G", G: "C", T: "A"})[c] || "N").join("");
+function findAll(seq, seed) { const out = [], rc = RC(seed); for (let i = 0; i + 6 <= seq.length; i++) { const w = seq.substr(i, 6); if (w === seed || w === rc) out.push(i); } return out; }
+function randomised(codes, starts, seed) {
+  const out = codes.slice(), banned = [seed, RC(seed)];
+  starts.forEach(s => { let block; do { block = Array.from({length: 6}, () => Math.floor(Math.random() * 4)); } while (banned.includes(block.map(b => "ACGT"[b]).join(""))); block.forEach((b, j) => { out[s + j] = b; }); });
+  return out;
+}
+function freeStarts(n, hits, count) { const blocked = new Uint8Array(n); hits.forEach(h => { for (let j = Math.max(0, h - 5); j <= Math.min(n - 6, h + 5); j++) blocked[j] = 1; });
+  const free = []; for (let i = 0; i + 6 <= n; i++) if (!blocked[i]) free.push(i);
+  for (let i = free.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [free[i], free[j]] = [free[j], free[i]]; }
+  return free.slice(0, count); }
+async function testHyp() {
+  if (!current) return;
+  const {seq, r} = current, codes = encode(seq), sp = r.top, cl = r.within.indexOf(Math.max(...r.within)), cell = `${SPECIES[sp]}|${CLASSES[cl]}`;
+  const prob = c => score(embed(c), sp).within[cl], base = prob(codes);
+  const cands = HY.items.filter(h => h.cell === cell && h.family === "motif" && h.verdict !== "not supported");
+  if (!cands.length) { $("queryHyp").innerHTML = `<p class="small muted">No supported motif hypotheses for ${esc(cellName(cell))}.</p>`; return; }
+  $("queryHyp").innerHTML = `<progress id="hypProg" max="${cands.length}" value="0"></progress>`;
+  const rows = [];
+  for (let i = 0; i < cands.length; i++) {
+    const h = cands[i], hits = findAll(seq, h.seed);
+    if (!hits.length) { rows.push(`<tr><td class="mono">${h.seed}</td><td>${pill(h.status)}</td><td colspan="3" class="muted">absent from this sequence</td></tr>`); continue; }
+    let drop = 0; for (let d = 0; d < 4; d++) drop += (base - prob(randomised(codes, hits, h.seed))) / 4;
+    const nulls = []; for (let d = 0; d < 16; d++) nulls.push(base - prob(randomised(codes, freeStarts(codes.length, hits, hits.length), h.seed)));
+    const pctile = 100 * nulls.filter(x => x < drop).length / nulls.length;
+    rows.push(`<tr><td class="mono">${h.seed}</td><td>${pill(h.status)}</td><td>${hits.length} at ${hits.join(", ")}</td><td class="num">${drop >= 0 ? "−" : "+"}${Math.abs(100 * drop).toFixed(1)} points</td><td class="num">${pctile.toFixed(0)}th</td></tr>`);
+    $("hypProg").value = i + 1; await tick();
+  }
+  $("queryHyp").innerHTML = `<div class="small muted">Registered hypotheses for ${esc(cellName(cell))} (P = ${base.toFixed(2)}), tested on this sequence: randomise the motif (4 draws) and compare the drop with 16 draws randomising as many blocks elsewhere.</div>
+    <div class="scroll"><table class="hyp"><tr><th>Seed</th><th>Status</th><th>Occurrences</th><th>Drop in P(class)</th><th>Percentile of null</th></tr>${rows.join("")}</table></div>`;
+}
+$("testHyp").onclick = testHyp;
+
+/* ---------- asthma ---------- */
+const AS = B.asthma;
+$("astIntro").innerHTML = `Starting point: the epistatic interaction between CDHR3 rs6967330 (C529Y, the rhinovirus C receptor allele) and GSDMB rs2305480 in early severe childhood asthma (Eliasen et al. 2022), the similar interaction with rs12936231, two non-replicated pairs, and the functional 17q21 variants rs4065275 (CTCF) and rs11078928 (GSDMB splice acceptor). Seven of the eight variants are on training chromosomes, so the model readouts there are in-sample. Published mechanisms reproduced in direction: ${Object.values(AS.summary.literature_checks).filter(v => v !== "not recovered").length} of ${AS.summary.n_checks}; strongly: ${AS.summary.recovered}.`;
+$("astTable").innerHTML = `<tr><th>Variant</th><th>Gene · consequence</th><th>Risk</th><th>Class shift (pct)</th><th>Attribution pct</th><th>Leads (obs / exp)</th><th>Published mechanism</th></tr>` +
+  AS.variants.map((v, i) => `<tr><td class="mono">${v.name}${v.held_out_chromosome ? "" : " *"}<div class="row" style="gap:4px;margin-top:4px"><button class="small" data-i="${i}" data-allele="risk">risk ${v.risk}</button><button class="small" data-i="${i}" data-allele="other">other</button></div></td><td><i>${esc(v.gene)}</i> · ${esc(v.consequence)}<div class="small muted">${esc(v.group)}</div></td><td class="mono">${v.risk}</td>
+    <td class="num">${v.largest_class_shift.toFixed(3)} ${esc(clName(v.largest_shift_class))} (${v.class_shift_percentile.toFixed(0)})</td><td class="num">${v.attribution_percentile.toFixed(0)}</td>
+    <td class="num">${v.motifs_present_above_95th} / ${v.motifs_present_above_95th_expected.toFixed(1)}</td>
+    <td class="small">${esc(v.literature_mechanism)}${v.literature_check ? `<div>${pill(v.literature_check.verdict === "recovers published direction" ? "recovers known signal" : v.literature_check.verdict === "not recovered" ? "novel lead" : "known signal, new context").replace(/>[^<]*</, `>${esc(v.literature_check.verdict)}<`)}</div>` : ""}</td></tr>`).join("");
+$("astTable").querySelectorAll("button[data-allele]").forEach(btn => btn.onclick = () => { const v = AS.variants[+btn.dataset.i], seq = v.windows[btn.dataset.allele];
+  $("example").selectedIndex = -1; $("seq").value = seq; run(seq, null);
+  $("timing").textContent = `${v.name}, ${btn.dataset.allele} allele`; $("bench").scrollIntoView({behavior: "smooth"}); });
+$("astChecks").innerHTML = AS.variants.filter(v => v.literature_check).map(v => { const c = v.literature_check, riskAlt = v.risk === v.alt;
+  const onRisk = riskAlt ? c.relative_alt : c.relative_ref, onOther = riskAlt ? c.relative_ref : c.relative_alt;
+  return `<div class="card"><b class="small mono">${v.name} · ${esc(c.motif.split(" (")[0])} · expected ${esc(c.expected.replace(/_/g, " "))}</b>
+    ${bars([["other allele", onOther, "var(--ctrl)"], ["risk allele", onRisk, "var(--clop)"]])}
+    <span class="small muted">${esc(c.verdict)} · ${c.percentile_nearby.toFixed(0)}th percentile of nearby substitutions</span></div>`; }).join("");
+$("astPairs").innerHTML = `<table class="hyp" style="min-width:420px"><tr><th>Pair</th><th>Evidence</th><th>Embedding cosine (pct)</th><th>Class-shift cosine (pct)</th></tr>` +
+  AS.pairs.map(p => `<tr><td>${esc(p.genes)}<div class="small muted mono">${esc(p.pair)}</div></td><td>${esc(p.evidence)}</td><td class="num">${p.embedding.cosine.toFixed(2)} (${p.embedding.percentile.toFixed(0)})</td><td class="num">${p.profile.cosine.toFixed(2)} (${p.profile.percentile.toFixed(0)})</td></tr>`).join("") + "</table>";
+
+/* ---------- gallery ---------- */
+const FG = B.figures, fkeys = Object.keys(FG);
+function showFigure(k) { $("galleryImg").src = FG[k].src; $("galleryImg").alt = FG[k].title; $("galleryTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === k)); }
+$("galleryTabs").innerHTML = fkeys.map(k => `<button data-k="${k}">${esc(FG[k].title)}</button>`).join("");
+$("galleryTabs").querySelectorAll("button").forEach(b => b.onclick = () => showFigure(b.dataset.k));
+showFigure(fkeys[0]);
+
+/* ---------- notes ---------- */
+$("notesList").innerHTML = [
+  "Exploratory. One test split per genome; intervals are window bootstraps conditional on the held-out chromosomes, corpus and fitted models.",
+  `The browser index holds ${NREF.toLocaleString("en")} of the training windows (60 per cell), so live scores differ slightly from the paper numbers, which search all training windows.`,
+  "Genomes and annotations came from public mirrors (Ensembl, FlyBase, WormBase, TAIR, SGD, NCBI); the worm annotation was moved from WBcel235 onto the ce10 sequence by local start-codon alignment. Rebuild from official releases before citing.",
+  "Yeast and E. coli “promoter” windows are centred 100 and 50 bp upstream of start codons, not at mapped transcription start sites.",
+].map(t => `<li>${t}</li>`).join("");
+const START = ["fly|tRNA", "human|promoter", "yeast|CDS"].map(c => EX.findIndex(x => x.cell === c && x.called === c)).find(i => i >= 0);
+load(START ?? 0);
+</script>

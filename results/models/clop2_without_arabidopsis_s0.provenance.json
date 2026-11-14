@@ -1,0 +1,124 @@
+{
+  "arch": {
+    "c1": 64,
+    "c2": 96,
+    "core_bp": 200,
+    "dilations": [
+      1,
+      2,
+      4
+    ],
+    "dim": 64,
+    "k1": 15,
+    "k2": 7,
+    "pool1": 8,
+    "pool2": 2
+  },
+  "provenance": {
+    "arch": {
+      "c1": 64,
+      "c2": 96,
+      "core_bp": 200,
+      "dilations": [
+        1,
+        2,
+        4
+      ],
+      "dim": 64,
+      "k1": 15,
+      "k2": 7,
+      "pool1": 8,
+      "pool2": 2
+    },
+    "batch": 256,
+    "corpus_sha256": "86624ca78fb2667d9941d9511344a51a88252dd752cc3e1129be68f5bf4ac737",
+    "crop_lengths": [
+      200,
+      350,
+      500
+    ],
+    "dev_rows": 3724,
+    "epochs": 6,
+    "exposure": "Vocabulary, weights and early stopping used only the rows passed to train().",
+    "fit_rows": 34308,
+    "history": [
+      {
+        "dev_text_accuracy": 0.13390619405657,
+        "epoch": 1,
+        "last_batch_loss": 2.3170888423919678
+      },
+      {
+        "dev_text_accuracy": 0.17078410311493017,
+        "epoch": 2,
+        "last_batch_loss": 1.8946888446807861
+      },
+      {
+        "dev_text_accuracy": 0.21321160042964554,
+        "epoch": 3,
+        "last_batch_loss": 1.3156325817108154
+      },
+      {
+        "dev_text_accuracy": 0.2841926244181883,
+        "epoch": 4,
+        "last_batch_loss": 1.5396405458450317
+      },
+      {
+        "dev_text_accuracy": 0.34308986752595777,
+        "epoch": 5,
+        "last_batch_loss": 0.8972525000572205
+      },
+      {
+        "dev_text_accuracy": 0.3495345506623702,
+        "epoch": 6,
+        "last_batch_loss": 1.3894855976104736
+      }
+    ],
+    "max_lr": 0.001,
+    "name": "clop2_without_arabidopsis_s0",
+    "objective": "multi_positive",
+    "parameters": 164801,
+    "seed": 20261114,
+    "selected_dev_text_accuracy": 0.3495345506623702
+  },
+  "training_cells": [
+    "ecoli|CDS",
+    "ecoli|promoter",
+    "fly|CDS",
+    "fly|enhancer",
+    "fly|five_prime_UTR",
+    "fly|intergenic",
+    "fly|intron",
+    "fly|lncRNA",
+    "fly|miRNA",
+    "fly|promoter",
+    "fly|pseudogene",
+    "fly|snoRNA",
+    "fly|tRNA",
+    "fly|three_prime_UTR",
+    "human|CDS",
+    "human|enhancer",
+    "human|five_prime_UTR",
+    "human|intergenic",
+    "human|intron",
+    "human|lncRNA",
+    "human|miRNA",
+    "human|open_chromatin",
+    "human|promoter",
+    "human|pseudogene",
+    "human|snRNA",
+    "human|snoRNA",
+    "human|three_prime_UTR",
+    "worm|CDS",
+    "worm|five_prime_UTR",
+    "worm|intergenic",
+    "worm|intron",
+    "worm|promoter",
+    "worm|three_prime_UTR",
+    "yeast|CDS",
+    "yeast|promoter",
+    "yeast|replication_origin",
+    "yeast|tRNA",
+    "yeast|transposable_element"
+  ],
+  "variant": "without_arabidopsis"
+}

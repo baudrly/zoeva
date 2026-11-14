@@ -1,0 +1,9 @@
+name	chrom	pos	ref	alt	risk	gene	consequence	group	literature_mechanism	expected_motif	expected_change	references	allele_note
+rs6967330	chr7	106018005	G	A	A	CDHR3	missense C529Y	Eliasen 2022 interaction (replicated)	Tyr529 raises CDHR3 surface expression and rhinovirus C binding and replication			eliasen2022,bochkov2015	GeneBe hg38
+rs2305480	chr17	39905943	G	A	G	GSDMB	missense P311S (P298S in older numbering)	Eliasen 2022 interaction (replicated)	17q21 lead coding variant in LD with GSDMB/ORMDL3 regulatory variants			eliasen2022	GeneBe hg38
+rs12936231	chr17	39872867	C	G	C	ZPBP2	intronic	Eliasen 2022 (similar interaction with CDHR3)	risk allele loses CTCF binding in T cells, rewiring ORMDL3 promoter contacts	CTCF	loss_on_risk	eliasen2022,schmiedel2016,verlaan2009	Ensembl (v1 check)
+rs4065275	chr17	39924612	A	G	G	ORMDL3	intronic enhancer	17q21 functional variant	risk allele gains CTCF binding in an ORMDL3 intronic enhancer	CTCF	gain_on_risk	schmiedel2016	Ensembl (v1 check)
+rs11078928	chr17	39908216	T	C	T	GSDMB	splice acceptor	17q21 functional variant	C allele skips GSDMB exon 6 and abolishes pyroptotic activity; associated with lower asthma risk	3' splice site	loss_on_alt	panganiban2018	Ensembl REST (T/A/C; common C)
+rs7758229	chr6	160419220	G	T	T	SLC22A3	intronic	Eliasen 2022 interaction with GSDMB (not replicated)	none reported			eliasen2022	position GeneBe; alternative allele inferred from the effect allele, check
+rs2230641	chr5	87399457	A	G	A	CCNH	missense	Eliasen 2022 interaction with ART1 (not replicated)	none reported			eliasen2022	position GeneBe; alternative allele inferred, check
+rs2280134	chr11	3660289	T	C	T	ART1	missense	Eliasen 2022 interaction with CCNH (not replicated)	none reported			eliasen2022	position GeneBe; alternative allele inferred, check

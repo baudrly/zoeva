@@ -1,0 +1,564 @@
+{
+  "arabidopsis:promoter:Chr4:17228776 (arabidopsis|promoter:CGCCGC)": {
+    "species": "fly",
+    "class": "promoter",
+    "class_probability": 0.2642407715320587,
+    "hypotheses": [
+      {
+        "id": "fly|promoter:TATCGA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          425
+        ],
+        "drop": 0.008920460939407349,
+        "null_percentile": 35.0,
+        "literature": "DRE",
+        "status": "recovers known signal"
+      },
+      {
+        "id": "fly|promoter:ACTTCG",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          123
+        ],
+        "drop": 0.0376606285572052,
+        "null_percentile": 65.0,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "39e1bc410d1aa6bc5a7d3036f421319021d2b2e018319fef439646f1b0a9d7f2"
+  },
+  "arabidopsis:promoter:Chr4:17228776 (arabidopsis|promoter:GAGAGA)": {
+    "species": "fly",
+    "class": "promoter",
+    "class_probability": 0.2642407715320587,
+    "hypotheses": [
+      {
+        "id": "fly|promoter:TATCGA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          425
+        ],
+        "drop": 0.008920460939407349,
+        "null_percentile": 35.0,
+        "literature": "DRE",
+        "status": "recovers known signal"
+      },
+      {
+        "id": "fly|promoter:ACTTCG",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          123
+        ],
+        "drop": 0.0376606285572052,
+        "null_percentile": 65.0,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "39e1bc410d1aa6bc5a7d3036f421319021d2b2e018319fef439646f1b0a9d7f2"
+  },
+  "arabidopsis:tRNA:Chr4:9978141 (arabidopsis|tRNA:GTTCGA)": {
+    "species": "arabidopsis",
+    "class": "tRNA",
+    "class_probability": 0.9896859526634216,
+    "hypotheses": [
+      {
+        "id": "arabidopsis|tRNA:GTTCGA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          227,
+          229
+        ],
+        "drop": 0.508212149143219,
+        "null_percentile": 100.0,
+        "literature": "tRNA B box",
+        "status": "recovers known signal"
+      }
+    ],
+    "query_sha256": "976e99af6968ffe2a52380d92678d1c73ed64221653a2d470dd61c623125bd6e"
+  },
+  "ecoli:promoter:chr:2504359 (ecoli|promoter:TAAAAA)": {
+    "species": "ecoli",
+    "class": "promoter",
+    "class_probability": 0.8167484402656555,
+    "hypotheses": [
+      {
+        "id": "ecoli|promoter:TAAAAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          98,
+          183,
+          207
+        ],
+        "drop": 0.22607821226119995,
+        "null_percentile": 100.0,
+        "literature": "TATA box",
+        "status": "known signal, new context"
+      },
+      {
+        "id": "ecoli|promoter:TAATTA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          270
+        ],
+        "drop": 0.015127718448638916,
+        "null_percentile": 80.0,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "ecoli|promoter:ATATAT",
+        "family": "motif",
+        "present": false,
+        "literature": "TATA box"
+      }
+    ],
+    "query_sha256": "def6d19641e643174eae8c6c0a5630a473ee940be72b569dc4d2dcb9fc53128a"
+  },
+  "ecoli:promoter:chr:2504359 (ecoli|promoter:TAATTA)": {
+    "species": "ecoli",
+    "class": "promoter",
+    "class_probability": 0.8167484402656555,
+    "hypotheses": [
+      {
+        "id": "ecoli|promoter:TAAAAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          98,
+          183,
+          207
+        ],
+        "drop": 0.22607821226119995,
+        "null_percentile": 100.0,
+        "literature": "TATA box",
+        "status": "known signal, new context"
+      },
+      {
+        "id": "ecoli|promoter:TAATTA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          270
+        ],
+        "drop": 0.015127718448638916,
+        "null_percentile": 80.0,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "ecoli|promoter:ATATAT",
+        "family": "motif",
+        "present": false,
+        "literature": "TATA box"
+      }
+    ],
+    "query_sha256": "def6d19641e643174eae8c6c0a5630a473ee940be72b569dc4d2dcb9fc53128a"
+  },
+  "fly:five_prime_UTR:2R:24086716 (fly|five_prime_UTR:CGCGCG)": {
+    "species": "fly",
+    "class": "five_prime_UTR",
+    "class_probability": 0.3414178192615509,
+    "hypotheses": [
+      {
+        "id": "fly|five_prime_UTR:CGCGCG",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          283
+        ],
+        "drop": 0.025331199169158936,
+        "null_percentile": 92.5,
+        "literature": "CpG run",
+        "status": "known signal, new context"
+      },
+      {
+        "id": "fly|five_prime_UTR:CGACGC",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      }
+    ],
+    "query_sha256": "fd77f951deb0141d873371ead6ed71566eb8c5d3b08063b44012444282d13293"
+  },
+  "fly:five_prime_UTR:2R:16309253 (fly|five_prime_UTR:CGACGC)": {
+    "species": "fly",
+    "class": "five_prime_UTR",
+    "class_probability": 0.41909825801849365,
+    "hypotheses": [
+      {
+        "id": "fly|five_prime_UTR:CGCGCG",
+        "family": "motif",
+        "present": false,
+        "literature": "CpG run"
+      },
+      {
+        "id": "fly|five_prime_UTR:CGACGC",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          20,
+          195,
+          227
+        ],
+        "drop": 0.18197140097618103,
+        "null_percentile": 95.0,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "8bbc904688baf23e9c771d7b90174915d97ff262acff7d77253094038d6b8870"
+  },
+  "fly:three_prime_UTR:2R:19430881 (fly|three_prime_UTR:TAAATA)": {
+    "species": "fly",
+    "class": "three_prime_UTR",
+    "class_probability": 0.5134265422821045,
+    "hypotheses": [
+      {
+        "id": "fly|three_prime_UTR:TAAATA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          346,
+          407
+        ],
+        "drop": -0.020970463752746582,
+        "null_percentile": 20.0,
+        "literature": "ARS consensus",
+        "status": "known signal, new context"
+      },
+      {
+        "id": "fly|three_prime_UTR:AAACTA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          99
+        ],
+        "drop": 0.031538307666778564,
+        "null_percentile": 67.5,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "1ce34047c6d7a2473e9d2e821492225b585be370632afd3fb9a6810a48735748"
+  },
+  "human:intron:chr2:177699276 (human|intron:AATTAG)": {
+    "species": "human",
+    "class": "intergenic",
+    "class_probability": 0.22883427143096924,
+    "hypotheses": [
+      {
+        "id": "human|intergenic:ATAATA",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      },
+      {
+        "id": "human|intergenic:TAAATA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          276,
+          412
+        ],
+        "drop": 0.07642155885696411,
+        "null_percentile": 75.0,
+        "literature": "TATA box",
+        "status": "known signal, new context"
+      }
+    ],
+    "query_sha256": "ddd87e2bea2d21beb0d7c3d828eef31014a0f7530186b47f434ee3918983762c"
+  },
+  "human:promoter:chr2:216081865 (human|promoter:CGCCCC)": {
+    "species": "human",
+    "class": "five_prime_UTR",
+    "class_probability": 0.4176802337169647,
+    "hypotheses": [
+      {
+        "id": "human|five_prime_UTR:CCGCCG",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          49,
+          268,
+          314
+        ],
+        "drop": 0.030833452939987183,
+        "null_percentile": 85.0,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "1d2a6674e5802c9991d23256369928496cf66f4b748a691b282d63e68f2c5ed0"
+  },
+  "human:pseudogene:chr2:64347466 (human|pseudogene:TGGCAA)": {
+    "species": "human",
+    "class": "pseudogene",
+    "class_probability": 0.5770769119262695,
+    "hypotheses": [
+      {
+        "id": "human|pseudogene:TGGCAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          69
+        ],
+        "drop": 0.01453542709350586,
+        "null_percentile": 72.5,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "human|pseudogene:ATATCG",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      },
+      {
+        "id": "human|pseudogene:CTTCAA",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      }
+    ],
+    "query_sha256": "e69db7a2b8aef3ecfa8c00344ba5b2ad92fb28b2d9c78c8a11766006ce6bbfaf"
+  },
+  "human:pseudogene:chr11:100666710 (human|pseudogene:CTTCAA)": {
+    "species": "human",
+    "class": "pseudogene",
+    "class_probability": 0.9496212005615234,
+    "hypotheses": [
+      {
+        "id": "human|pseudogene:TGGCAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          225,
+          302,
+          372,
+          390,
+          450
+        ],
+        "drop": 0.11763906478881836,
+        "null_percentile": 92.5,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "human|pseudogene:ATATCG",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      },
+      {
+        "id": "human|pseudogene:CTTCAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          66,
+          251
+        ],
+        "drop": 0.12138867378234863,
+        "null_percentile": 97.5,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "39147bc03726d774fb2ba3273620497acbf4f7a843e01b70de10039c6e4ade50"
+  },
+  "human:three_prime_UTR:chr11:72837768 (human|three_prime_UTR:AATAAA)": {
+    "species": "human",
+    "class": "CDS",
+    "class_probability": 0.19739609956741333,
+    "hypotheses": [
+      {
+        "id": "human|CDS:ATCGAC",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      }
+    ],
+    "query_sha256": "f241782c3c79fa62470d75916bb828d79fa9125887534aac7272f514cacc61d1"
+  },
+  "human:three_prime_UTR:chr11:10574712 (human|three_prime_UTR:TTTAAA)": {
+    "species": "human",
+    "class": "intergenic",
+    "class_probability": 0.17412562668323517,
+    "hypotheses": [
+      {
+        "id": "human|intergenic:ATAATA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          30,
+          33,
+          80
+        ],
+        "drop": 0.0001510828733444214,
+        "null_percentile": 35.0,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "human|intergenic:TAAATA",
+        "family": "motif",
+        "present": false,
+        "literature": "TATA box"
+      }
+    ],
+    "query_sha256": "ed70d697bb27ce8be75f75c2494ad543ce4f6bc7a85f03d018e42a0cff6d393a"
+  },
+  "worm:CDS:III:3440619 (worm|CDS:GTTCCA)": {
+    "species": "worm",
+    "class": "CDS",
+    "class_probability": 0.8551515936851501,
+    "hypotheses": [
+      {
+        "id": "worm|CDS:CTGCAG",
+        "family": "motif",
+        "present": false,
+        "literature": null
+      },
+      {
+        "id": "worm|CDS:GTTCCA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          419
+        ],
+        "drop": 0.01734405755996704,
+        "null_percentile": 62.5,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "4d76fa4d9dcb5e3ac4f4bafb27aa003ecac667be5910e0a1a9b9ba6431799533"
+  },
+  "worm:intron:III:8118851 (worm|intron:AAATTT)": {
+    "species": "worm",
+    "class": "intron",
+    "class_probability": 0.3179854154586792,
+    "hypotheses": [
+      {
+        "id": "worm|intron:AAATTT",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          91,
+          173,
+          260,
+          349
+        ],
+        "drop": 0.12528051435947418,
+        "null_percentile": 100.0,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "worm|intron:TTGAAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          162,
+          277
+        ],
+        "drop": 0.014492303133010864,
+        "null_percentile": 72.5,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "0dc0976febf1d207dfad6e15b7d1ab0f5c91fd37de4ef2b606deae2554229252"
+  },
+  "worm:three_prime_UTR:III:13764057 (worm|three_prime_UTR:AATAAA)": {
+    "species": "worm",
+    "class": "three_prime_UTR",
+    "class_probability": 0.6141198873519897,
+    "hypotheses": [
+      {
+        "id": "worm|three_prime_UTR:AATAAA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          266
+        ],
+        "drop": 0.14088469743728638,
+        "null_percentile": 95.0,
+        "literature": "poly(A) signal",
+        "status": "recovers known signal"
+      }
+    ],
+    "query_sha256": "ff66f068732279501db127306cedddf5c967bc013ae26181bf0d948485e6f08b"
+  },
+  "yeast:promoter:chr04:631181 (yeast|promoter:AAAAAG)": {
+    "species": "yeast",
+    "class": "promoter",
+    "class_probability": 0.9402837157249451,
+    "hypotheses": [
+      {
+        "id": "yeast|promoter:AAAAAG",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          245,
+          283,
+          318
+        ],
+        "drop": 0.054803669452667236,
+        "null_percentile": 97.5,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "yeast|promoter:TATATA",
+        "family": "motif",
+        "present": false,
+        "literature": "TATA box"
+      }
+    ],
+    "query_sha256": "d5d770deca7545346e8c00047837c5689ea755b1a4053cb5387c18f0643b3c2f"
+  },
+  "yeast:transposable_element:chr04:946124 (yeast|transposable_element:GTAATA)": {
+    "species": "yeast",
+    "class": "transposable_element",
+    "class_probability": 0.9621432423591614,
+    "hypotheses": [
+      {
+        "id": "yeast|transposable_element:GTAATA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          85,
+          99
+        ],
+        "drop": 0.009875714778900146,
+        "null_percentile": 72.5,
+        "literature": null,
+        "status": "novel lead"
+      },
+      {
+        "id": "yeast|transposable_element:ATCCTA",
+        "family": "motif",
+        "present": true,
+        "occurrences": [
+          121,
+          373
+        ],
+        "drop": 0.0027388930320739746,
+        "null_percentile": 32.5,
+        "literature": null,
+        "status": "novel lead"
+      }
+    ],
+    "query_sha256": "ae615b629d12d56a3a7ccb1a73ccb9e6d0b7beec04d87f51616656fa100efb12"
+  }
+}

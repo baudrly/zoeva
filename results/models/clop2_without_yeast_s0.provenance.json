@@ -1,0 +1,125 @@
+{
+  "arch": {
+    "dim": 64,
+    "c1": 64,
+    "k1": 15,
+    "pool1": 8,
+    "c2": 96,
+    "k2": 7,
+    "pool2": 2,
+    "dilations": [
+      1,
+      2,
+      4
+    ],
+    "core_bp": 200
+  },
+  "provenance": {
+    "name": "clop2_without_yeast_s0",
+    "objective": "multi_positive",
+    "arch": {
+      "dim": 64,
+      "c1": 64,
+      "k1": 15,
+      "pool1": 8,
+      "c2": 96,
+      "k2": 7,
+      "pool2": 2,
+      "dilations": [
+        1,
+        2,
+        4
+      ],
+      "core_bp": 200
+    },
+    "parameters": 164481,
+    "seed": 20261114,
+    "epochs": 6,
+    "batch": 256,
+    "max_lr": 0.001,
+    "crop_lengths": [
+      200,
+      350,
+      500
+    ],
+    "fit_rows": 37126,
+    "dev_rows": 4024,
+    "history": [
+      {
+        "epoch": 1,
+        "last_batch_loss": 2.4233815670013428,
+        "dev_text_accuracy": 0.1380881378396289
+      },
+      {
+        "epoch": 2,
+        "last_batch_loss": 3.2169270515441895,
+        "dev_text_accuracy": 0.09932074221338635
+      },
+      {
+        "epoch": 3,
+        "last_batch_loss": 1.158776044845581,
+        "dev_text_accuracy": 0.2983764082173625
+      },
+      {
+        "epoch": 4,
+        "last_batch_loss": 2.86879825592041,
+        "dev_text_accuracy": 0.3260437375745527
+      },
+      {
+        "epoch": 5,
+        "last_batch_loss": 1.3960505723953247,
+        "dev_text_accuracy": 0.35255135851557323
+      },
+      {
+        "epoch": 6,
+        "last_batch_loss": 1.962843656539917,
+        "dev_text_accuracy": 0.35719019218025183
+      }
+    ],
+    "selected_dev_text_accuracy": 0.35719019218025183,
+    "corpus_sha256": "3428bd0708981cd7973e56514169ab656ff4197788034ad14cc6b86baeeb3717",
+    "exposure": "Vocabulary, weights and early stopping used only the rows passed to train()."
+  },
+  "variant": "without_yeast",
+  "training_cells": [
+    "arabidopsis|CDS",
+    "arabidopsis|intergenic",
+    "arabidopsis|intron",
+    "arabidopsis|promoter",
+    "arabidopsis|tRNA",
+    "arabidopsis|transposable_element",
+    "ecoli|CDS",
+    "ecoli|promoter",
+    "fly|CDS",
+    "fly|enhancer",
+    "fly|five_prime_UTR",
+    "fly|intergenic",
+    "fly|intron",
+    "fly|lncRNA",
+    "fly|miRNA",
+    "fly|promoter",
+    "fly|pseudogene",
+    "fly|snoRNA",
+    "fly|tRNA",
+    "fly|three_prime_UTR",
+    "human|CDS",
+    "human|enhancer",
+    "human|five_prime_UTR",
+    "human|intergenic",
+    "human|intron",
+    "human|lncRNA",
+    "human|miRNA",
+    "human|open_chromatin",
+    "human|promoter",
+    "human|pseudogene",
+    "human|snRNA",
+    "human|snoRNA",
+    "human|three_prime_UTR",
+    "worm|CDS",
+    "worm|five_prime_UTR",
+    "worm|intergenic",
+    "worm|intron",
+    "worm|promoter",
+    "worm|three_prime_UTR"
+  ]
+}
